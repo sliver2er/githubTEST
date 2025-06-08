@@ -84,3 +84,18 @@ def clear_rows(grid, locked):
                 new_key = (x, y + inc)
                 locked[new_key] = locked.pop(key)
     return inc
+
+def draw_next_shape(shape, surface):
+    font = pygame.font.SysFont('comicsans', 24)
+    label = font.render('Next:', True, WHITE)
+
+    sx = WIDTH + 30
+    sy = 50
+    shape_matrix = shape.image()
+
+    for i, line in enumerate(shape_matrix):
+        for j, column in enumerate(line):
+            if column == '0':
+                pygame.draw.rect(surface, shape.color, (sx + j * BLOCK_SIZE, sy + i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
+
+    surface.blit(label, (sx, sy - 30))

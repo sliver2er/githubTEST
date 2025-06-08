@@ -1,7 +1,7 @@
 # main.py
 import pygame
 import sys
-from tetris import create_grid, get_shape, convert_shape_format, valid_space, check_lost, clear_rows
+from tetris import create_grid, get_shape, convert_shape_format, valid_space, check_lost, clear_rows, draw_next_shape
 from config import *
 
 pygame.font.init()
@@ -13,21 +13,24 @@ def draw_grid(surface, grid):
             pygame.draw.rect(surface, grid[y][x], (x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE), 0)
 
     for y in range(ROWS):
-        pygame.draw.line(surface, WHITE, (0, y * BLOCK_SIZE), (WIDTH, y * BLOCK_SIZE))
+        pygame.draw.line(surface, (0,255,255), (0, y * BLOCK_SIZE), (WIDTH, y * BLOCK_SIZE))
     for x in range(COLS):
-        pygame.draw.line(surface, WHITE, (x * BLOCK_SIZE, 0), (x * BLOCK_SIZE, HEIGHT))
+        pygame.draw.line(surface, (0,255,255), (x * BLOCK_SIZE, 0), (x * BLOCK_SIZE, HEIGHT))
 
-def draw_window(surface, grid, score=0):
+def draw_window(surface, grid, score=0, next_piece=None):
     surface.fill(BLACK)
     draw_grid(surface, grid)
 
     score_text = FONT.render(f"Score: {score}", True, WHITE)
     surface.blit(score_text, (10, 10))
 
+    if next_piece:
+        draw_next_shape(next_piece, surface)
+
     pygame.display.update()
 
 def main():
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen = pygame.display.set_mode((WIDTH + 150, HEIGHT))  # 넓이를 확장
     pygame.display.set_caption("Tetris")
 
     locked_positions = {}
@@ -82,7 +85,6 @@ def main():
         for x, y in shape_pos:
             if y >= 0:
                 grid[y][x] = current_piece.color
-
         if change_piece:
             for pos in shape_pos:
                 p = (pos[0], pos[1])
@@ -92,7 +94,7 @@ def main():
             score += clear_rows(grid, locked_positions) * 10
             change_piece = False
 
-        draw_window(screen, grid, score)
+        draw_window(screen, grid, score, next_piece)
 
         if check_lost(locked_positions):
             run = False
